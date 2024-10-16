@@ -31,5 +31,5 @@ jobs:
       with:
        context:
        push: true
-       tags: marcus1pierce/nextcloud:${{ matrix.architecture }}
+       tags: marcus1pierce/nextcloud:29-fpm${{ matrix.architecture }}
        platforms: linux/${{ matrix.architecture }}
