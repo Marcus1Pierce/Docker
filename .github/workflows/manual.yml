@@ -9,6 +9,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [amd64, arm64]
 
     steps:
     - name: Check out the repo
