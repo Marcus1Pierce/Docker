@@ -3,15 +3,11 @@ name: Build and push Docker image to dockerhub
 on:
   push:
     branches: [ "master" ]
-    paths:
-      - 'Nextcloud/**'
-      - 'Nextcloud-30/**'
-      - 'Caddy/**'
     
 jobs:
 
   build-nextcloud:
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'Nextcloud') }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -37,9 +33,11 @@ jobs:
         push: true
         tags: marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
         platforms: linux/${{ matrix.architecture }}
+    paths:
+      - 'Nextcloud/**'
 
   build-nextcloud-30:
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'Nextcloud-30') }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -65,9 +63,11 @@ jobs:
         push: true
         tags: marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
         platforms: linux/${{ matrix.architecture }}
+    paths:
+      - 'Nextcloud-30/**'
 
   build-caddy:
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, 'Caddy') }}
+    if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -93,3 +93,5 @@ jobs:
         push: true
         tags: marcus1pierce/caddy:2-${{ matrix.architecture }}
         platforms: linux/${{ matrix.architecture }}
+    paths:
+      - 'Caddy/**'
