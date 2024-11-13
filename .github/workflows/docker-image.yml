@@ -6,6 +6,7 @@ on:
     paths:
       - 'Nextcloud/**'
       - 'Caddy/**'
+      - 'Nextcloud-30/**'
     
 jobs:
 
@@ -35,6 +36,34 @@ jobs:
         context: ./Nextcloud
         push: true
         tags: marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
+        platforms: linux/${{ matrix.architecture }}
+
+  build-nextcloud-30:
+    if: contains(github.event.commits.*.modified, 'Nextcloud-30/')
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [amd64, arm64]
+
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v4
+
+    - name: Setup QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Login to dockerhub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push Nextcloud Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./Nextcloud
+        push: true
+        tags: marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
         platforms: linux/${{ matrix.architecture }}
 
   build-caddy:
