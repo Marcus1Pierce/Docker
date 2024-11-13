@@ -9,87 +9,108 @@ on:
       - 'Caddy/**'
     
 jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      nextcloud: ${{ steps.filter.outputs.nextcloud }}
+      nextcloud30: ${{ steps.filter.outputs.nextcloud30 }}
+      caddy: ${{ steps.filter.outputs.caddy }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        
+      - name: Check file changes
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            nextcloud:
+              - 'Nextcloud/**'
+            nextcloud30:
+              - 'Nextcloud-30/**'
+            caddy:
+              - 'Caddy/**'
 
   build-nextcloud:
-    if: contains(github.event.head_commit.message, 'Nextcloud/')
+    needs: check-changes
+    if: needs.check-changes.outputs.nextcloud == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
         architecture: [amd64, arm64]
-
     steps:
-    - name: Check out the repo
-      uses: actions/checkout@v4
-
-    - name: Setup QEMU
-      uses: docker/setup-qemu-action@v2
-
-    - name: Login to dockerhub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build and push Nextcloud Docker Image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./Nextcloud
-        push: true
-        tags: marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
-        platforms: linux/${{ matrix.architecture }}
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and push Nextcloud Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Nextcloud
+          push: true
+          tags: marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
+          platforms: linux/${{ matrix.architecture }}
 
   build-nextcloud-30:
-    if: contains(github.event.head_commit.message, 'Nextcloud-30/')
+    needs: check-changes
+    if: needs.check-changes.outputs.nextcloud30 == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
         architecture: [amd64, arm64]
-
     steps:
-    - name: Check out the repo
-      uses: actions/checkout@v4
-
-    - name: Setup QEMU
-      uses: docker/setup-qemu-action@v2
-
-    - name: Login to dockerhub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build and push Nextcloud 30 Docker Image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./Nextcloud-30
-        push: true
-        tags: marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
-        platforms: linux/${{ matrix.architecture }}
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and push Nextcloud 30 Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Nextcloud-30
+          push: true
+          tags: marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
+          platforms: linux/${{ matrix.architecture }}
 
   build-caddy:
-    if: contains(github.event.head_commit.message, 'Caddy/')
+    needs: check-changes
+    if: needs.check-changes.outputs.caddy == 'true'
     runs-on: ubuntu-latest
     strategy:
       matrix:
         architecture: [amd64, arm64]
-
     steps:
-    - name: Check out the repo
-      uses: actions/checkout@v4
-      
-    - name: Setup QEMU
-      uses: docker/setup-qemu-action@v2
-
-    - name: Login to dockerhub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build and push Caddy Docker Image
-      uses: docker/build-push-action@v5
-      with:
-        context: ./Caddy
-        push: true
-        tags: marcus1pierce/caddy:2-${{ matrix.architecture }}
-        platforms: linux/${{ matrix.architecture }}
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and push Caddy Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Caddy
+          push: true
+          tags: marcus1pierce/caddy:2-${{ matrix.architecture }}
+          platforms: linux/${{ matrix.architecture }}
