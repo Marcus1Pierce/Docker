@@ -3,10 +3,14 @@ name: Build and push Docker image to dockerhub
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - 'Nextcloud/**'
+      - 'Caddy/**'
     
 jobs:
 
   build-nextcloud:
+    if: contains(github.event.commits.*.modified, 'Nextcloud/')
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -34,6 +38,7 @@ jobs:
         platforms: linux/${{ matrix.architecture }}
 
   build-caddy:
+    if: contains(github.event.commits.*.modified, 'Caddy/')
     runs-on: ubuntu-latest
     strategy:
       matrix:
