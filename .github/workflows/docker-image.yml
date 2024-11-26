@@ -130,6 +130,9 @@ jobs:
     needs: check-changes
     if: needs.check-changes.outputs.watchtower == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [amd64, arm64]
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
