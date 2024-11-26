@@ -1,4 +1,4 @@
-name: Build and push Docker image to dockerhub
+name: Build and push Docker image to Docker Hub
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - 'Nextcloud-30/**'
       - 'Caddy/**'
       - 'Watchtower/**'
-    
+
 jobs:
   check-changes:
     runs-on: ubuntu-latest
@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-        
+
       - name: Check file changes
         uses: dorny/paths-filter@v2
         id: filter
@@ -46,22 +46,24 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-        
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
-        
-      - name: Login to dockerhub
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
+
       - name: Build and push Nextcloud Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Nextcloud
           push: true
-          tags: marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
+          tags: |
+            marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
+            marcus1pierce/nextcloud:29-fpm-latest
           platforms: linux/${{ matrix.architecture }}
 
   build-nextcloud-30:
@@ -74,22 +76,24 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-        
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
-        
-      - name: Login to dockerhub
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
+
       - name: Build and push Nextcloud 30 Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Nextcloud-30
           push: true
-          tags: marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
+          tags: |
+            marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
+            marcus1pierce/nextcloud:30-fpm-latest
           platforms: linux/${{ matrix.architecture }}
 
   build-caddy:
@@ -102,22 +106,24 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-        
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
-        
-      - name: Login to dockerhub
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
+
       - name: Build and push Caddy Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Caddy
           push: true
-          tags: marcus1pierce/caddy:2-${{ matrix.architecture }}
+          tags: |
+            marcus1pierce/caddy:2-${{ matrix.architecture }}
+            marcus1pierce/caddy:2-latest
           platforms: linux/${{ matrix.architecture }}
 
   build-watchtower:
@@ -130,20 +136,22 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-        
+
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
-        
-      - name: Login to dockerhub
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
-      - name: Build and push Watch Docker Image
+
+      - name: Build and push Watchtower Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Watchtower
           push: true
-          tags: marcus1pierce/watchtower:latest-${{ matrix.architecture }}
+          tags: |
+            marcus1pierce/watchtower:{{ matrix.architecture }}
+            marcus1pierce/watchtower:latest
           platforms: linux/${{ matrix.architecture }}
