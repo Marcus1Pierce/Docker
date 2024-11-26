@@ -16,6 +16,8 @@ jobs:
       nextcloud: ${{ steps.filter.outputs.nextcloud }}
       nextcloud30: ${{ steps.filter.outputs.nextcloud30 }}
       caddy: ${{ steps.filter.outputs.caddy }}
+      watthtower: ${{ steps.filter.outputs.watchtower }}
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -143,5 +145,5 @@ jobs:
         with:
           context: ./Watchtower
           push: true
-          tags: marcus1pierce/watchtower:2-${{ matrix.architecture }}
+          tags: marcus1pierce/watchtower:latest-${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
