@@ -1,4 +1,4 @@
-name: Build and push Docker image to Docker Hub
+name: Build and push Docker image to dockerhub
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - 'Nextcloud-30/**'
       - 'Caddy/**'
       - 'Watchtower/**'
-
+    
 jobs:
   check-changes:
     runs-on: ubuntu-latest
@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
+        
       - name: Check file changes
         uses: dorny/paths-filter@v2
         id: filter
@@ -46,25 +46,31 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
+        
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
-
-      - name: Login to Docker Hub
+        
+      - name: Login to dockerhub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+          
       - name: Build and push Nextcloud Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Nextcloud
           push: true
-          tags: |
-            marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
-            marcus1pierce/nextcloud:29-fpm-latest
+          tags: marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
+    
+      - name: Create and push multi-arch manifest
+        if: ${{ matrix.architecture == 'arm64' }}
+        run: |
+          docker manifest create marcus1pierce/nextcloud:29-fpm \
+            marcus1pierce/nextcloud:29-fpm-amd64 \
+            marcus1pierce/nextcloud:29-fpm-arm64
+          docker manifest push marcus1pierce/nextcloud:29-fpm
 
   build-nextcloud-30:
     needs: check-changes
@@ -76,25 +82,31 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
+        
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
-
-      - name: Login to Docker Hub
+        
+      - name: Login to dockerhub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+          
       - name: Build and push Nextcloud 30 Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Nextcloud-30
           push: true
-          tags: |
-            marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
-            marcus1pierce/nextcloud:30-fpm-latest
+          tags: marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
+    
+      - name: Create and push multi-arch manifest
+        if: ${{ matrix.architecture == 'arm64' }}
+        run: |
+          docker manifest create marcus1pierce/nextcloud:30-fpm \
+            marcus1pierce/nextcloud:30-fpm-amd64 \
+            marcus1pierce/nextcloud:30-fpm-arm64
+          docker manifest push marcus1pierce/nextcloud:30-fpm
 
   build-caddy:
     needs: check-changes
@@ -106,25 +118,31 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
+        
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
-
-      - name: Login to Docker Hub
+        
+      - name: Login to dockerhub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+          
       - name: Build and push Caddy Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Caddy
           push: true
-          tags: |
-            marcus1pierce/caddy:2-${{ matrix.architecture }}
-            marcus1pierce/caddy:2-latest
+          tags: marcus1pierce/caddy:2-${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
+    
+      - name: Create and push multi-arch manifest
+        if: ${{ matrix.architecture == 'arm64' }}
+        run: |
+          docker manifest create marcus1pierce/caddy:2 \
+            marcus1pierce/caddy:2-amd64 \
+            marcus1pierce/caddy:2-arm64
+          docker manifest push marcus1pierce/caddy:2
 
   build-watchtower:
     needs: check-changes
@@ -136,27 +154,28 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-
+        
       - name: Setup QEMU
         uses: docker/setup-qemu-action@v2
-
-      - name: Login to Docker Hub
+        
+      - name: Login to dockerhub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker-container
-
-      - name: Build and push Watchtower Docker Image
+          
+      - name: Build and push Watch Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Watchtower
           push: true
-          tags: |
-            marcus1pierce/watchtower:latest
-            marcus1pierce/watchtower:${{ matrix.architecture }}
+          tags: marcus1pierce/watchtower:${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
+    
+      - name: Create and push multi-arch manifest
+        if: ${{ matrix.architecture == 'arm64' }}
+        run: |
+          docker manifest create marcus1pierce/watchtower:latest \
+            marcus1pierce/watchtower:amd64 \
+            marcus1pierce/watchtower:arm64
+          docker manifest push marcus1pierce/watchtower:latest
