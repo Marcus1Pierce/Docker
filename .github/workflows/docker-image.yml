@@ -152,6 +152,6 @@ jobs:
           context: ./Watchtower
           push: true
           tags: |
-            marcus1pierce/watchtower:{{ matrix.architecture }}
+            marcus1pierce/watchtower:${{ matrix.architecture }}
             marcus1pierce/watchtower:latest
           platforms: linux/${{ matrix.architecture }}
