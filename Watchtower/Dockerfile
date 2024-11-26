@@ -9,3 +9,7 @@ RUN set -ex; \
     apk add --no-cache bash
 
 COPY --from=watchtower /watchtower /watchtower
+
+HEALTHCHECK CMD [ "/watchtower", "--health-check"]
+
+ENTRYPOINT ["/watchtower"]
