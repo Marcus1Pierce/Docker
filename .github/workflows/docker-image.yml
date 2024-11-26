@@ -159,4 +159,4 @@ jobs:
           tags: |
             marcus1pierce/watchtower:latest
             marcus1pierce/watchtower:${{ matrix.architecture }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/${{ matrix.architecture }}
