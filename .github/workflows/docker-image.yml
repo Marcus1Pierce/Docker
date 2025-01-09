@@ -8,7 +8,7 @@ on:
       - 'Nextcloud-30/**'
       - 'Caddy/**'
       - 'Watchtower/**'
-    
+
 jobs:
   check-changes:
     runs-on: ubuntu-latest
@@ -17,7 +17,6 @@ jobs:
       nextcloud30: ${{ steps.filter.outputs.nextcloud30 }}
       caddy: ${{ steps.filter.outputs.caddy }}
       watchtower: ${{ steps.filter.outputs.watchtower }}
-
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -63,9 +62,18 @@ jobs:
           push: true
           tags: marcus1pierce/nextcloud:29-fpm-${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
-    
-      - name: Create and push multi-arch manifest
-        if: ${{ matrix.architecture == 'arm64' }}
+
+  create-manifest-nextcloud:
+    needs: build-nextcloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push Nextcloud multi-arch manifest
         run: |
           docker manifest create marcus1pierce/nextcloud:29-fpm \
             marcus1pierce/nextcloud:29-fpm-amd64 \
@@ -99,9 +107,18 @@ jobs:
           push: true
           tags: marcus1pierce/nextcloud:30-fpm-${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
-    
-      - name: Create and push multi-arch manifest
-        if: ${{ matrix.architecture == 'arm64' }}
+
+  create-manifest-nextcloud-30:
+    needs: build-nextcloud-30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push Nextcloud 30 multi-arch manifest
         run: |
           docker manifest create marcus1pierce/nextcloud:30-fpm \
             marcus1pierce/nextcloud:30-fpm-amd64 \
@@ -135,9 +152,18 @@ jobs:
           push: true
           tags: marcus1pierce/caddy:2-${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
-    
-      - name: Create and push multi-arch manifest
-        if: ${{ matrix.architecture == 'arm64' }}
+
+  create-manifest-caddy:
+    needs: build-caddy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push Caddy multi-arch manifest
         run: |
           docker manifest create marcus1pierce/caddy:2 \
             marcus1pierce/caddy:2-amd64 \
@@ -164,16 +190,25 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      - name: Build and push Watch Docker Image
+      - name: Build and push Watchtower Docker Image
         uses: docker/build-push-action@v5
         with:
           context: ./Watchtower
           push: true
           tags: marcus1pierce/watchtower:${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
-    
-      - name: Create and push multi-arch manifest
-        if: ${{ matrix.architecture == 'arm64' }}
+
+  create-manifest-watchtower:
+    needs: build-watchtower
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push Watchtower multi-arch manifest
         run: |
           docker manifest create marcus1pierce/watchtower:latest \
             marcus1pierce/watchtower:amd64 \
