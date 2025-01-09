@@ -2,11 +2,13 @@
 # From https://github.com/containrrr/watchtower/blob/main/dockerfiles/Dockerfile.self-contained
 FROM containrrr/watchtower:1.7.1 AS watchtower
 
-FROM alpine:3.20.4
+FROM alpine:3.20.5
 
-RUN set -ex; \
-    apk upgrade --no-cache -a; \
-    apk add --no-cache bash
+RUN apk upgrade --no-cache -a
+RUN apk add --no-cache \
+    bash \
+    tzdata \
+    ca-certificates
 
 COPY --from=watchtower /watchtower /watchtower
 
