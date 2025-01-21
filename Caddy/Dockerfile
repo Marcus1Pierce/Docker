@@ -8,7 +8,7 @@ RUN apk add --no-cache \
     tzdata \
     ca-certificates \
     libcap \
-	mailcap
+    mailcap
 
 FROM caddy:2.9.1
 
