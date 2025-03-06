@@ -6,6 +6,7 @@ on:
     paths:
       - 'Nextcloud/**'
       - 'Nextcloud-30/**'
+      - 'Nextcloud-31/**'
       - 'Caddy/**'
       - 'Watchtower/**'
 
@@ -15,6 +16,7 @@ jobs:
     outputs:
       nextcloud: ${{ steps.filter.outputs.nextcloud }}
       nextcloud30: ${{ steps.filter.outputs.nextcloud30 }}
+      nextcloud31: ${{ steps.filter.outputs.nextcloud31 }}
       caddy: ${{ steps.filter.outputs.caddy }}
       watchtower: ${{ steps.filter.outputs.watchtower }}
     steps:
@@ -30,6 +32,8 @@ jobs:
               - 'Nextcloud/**'
             nextcloud30:
               - 'Nextcloud-30/**'
+            nextcloud31:
+              - 'Nextcloud-31/**'
             caddy:
               - 'Caddy/**'
             watchtower:
@@ -124,6 +128,51 @@ jobs:
             marcus1pierce/nextcloud:30-fpm-amd64 \
             marcus1pierce/nextcloud:30-fpm-arm64
           docker manifest push marcus1pierce/nextcloud:30-fpm
+
+  build-nextcloud-31:
+    needs: check-changes
+    if: needs.check-changes.outputs.nextcloud31 == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [amd64, arm64]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and push Nextcloud 31 Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Nextcloud-31
+          push: true
+          tags: marcus1pierce/nextcloud:31-fpm-${{ matrix.architecture }}
+          platforms: linux/${{ matrix.architecture }}
+
+  create-manifest-nextcloud-31:
+    needs: build-nextcloud-31
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push Nextcloud 31 multi-arch manifest
+        run: |
+          docker manifest create marcus1pierce/nextcloud:31-fpm \
+            marcus1pierce/nextcloud:31-fpm-amd64 \
+            marcus1pierce/nextcloud:31-fpm-arm64
+          docker manifest push marcus1pierce/nextcloud:31-fpm
 
   build-caddy:
     needs: check-changes
