@@ -1,4 +1,4 @@
-FROM nextcloud:31.0.0-fpm
+FROM nextcloud:31.0.1-fpm
 
 RUN apt update && \
       apt install -y procps smbclient libsmbclient-dev libmagickcore-6.q16-6-extra unrar-free p7zip p7zip-full \
