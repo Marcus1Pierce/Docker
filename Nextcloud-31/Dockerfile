@@ -7,9 +7,8 @@ RUN apk update && \
       samba-client-libs \
       imagemagick \
       imagemagick-libs \
-      unrar \
+      unar \
       p7zip \
-      p7zip-full \
       nano \
       curl \
       ghostscript \
@@ -19,7 +18,25 @@ RUN apk update && \
       libheif \
       librsvg \
       util-linux \
-      rsync && \
+      rsync \
+      autoconf \
+      freetype-dev \
+      gmp-dev \
+      icu-dev \
+      imagemagick-dev \
+      imagemagick-svg \
+      imagemagick-heic \
+      imagemagick-tiff \
+      libevent-dev \
+      libjpeg-turbo-dev \
+      libmcrypt-dev \
+      libmemcached-dev \
+      libpng-dev \
+      libwebp-dev \
+      libxml2-dev \
+      libzip-dev \
+      pcre-dev \
+      postgresql-dev && \
       # Not supported yet python3-pip
       rm -rf /var/cache/apk/*
 
