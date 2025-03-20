@@ -56,13 +56,13 @@ RUN apk update && \
       nodejs \
       libreoffice \
       bind-tools \
-      coreutils && \
-      # Not supported yet python3-pip
+      coreutils \
+      build-base && \
       rm -rf /var/cache/apk/*
 
 # Samba client php extension
-RUN pecl install smbclient
-RUN docker-php-ext-enable smbclient
+RUN pecl install smbclient && \
+    docker-php-ext-enable smbclient
 
 # Install php-ldap Extension
 RUN docker-php-ext-install ldap
@@ -71,4 +71,4 @@ RUN docker-php-ext-install ldap
 RUN pecl install inotify
 
 # For LibreSign preview image
-RUN sed -i'' 's|.*<policy domain="coder".*"PDF".*|<policy domain="coder" rights="read \| write" pattern="PDF" />|g' /etc/ImageMagick-6/policy.xml
+#RUN sed -i'' 's|.*<policy domain="coder".*"PDF".*|<policy domain="coder" rights="read \| write" pattern="PDF" />|g' /etc/ImageMagick-6/policy.xml
