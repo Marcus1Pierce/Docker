@@ -1,12 +1,17 @@
-FROM nextcloud:29.0.12-fpm
+FROM nextcloud:29.0.14-fpm
 
 RUN apt update && \
-      apt install -y procps smbclient libsmbclient-dev libmagickcore-6.q16-6-extra unrar-free p7zip p7zip-full \
-      nano cron curl ghostscript libldap2-dev iputils-ping && \
+      apt install -y \
+      procps smbclient libsmbclient-dev \
+      libmagickcore-6.q16-6-extra unrar-free p7zip \
+      p7zip-full nano cron \
+      curl ghostscript libldap2-dev \
+      iputils-ping ffmpeg imagemagick \
+      libheif-dev ghostscript librsvg2-bin \
+      libiconv-hook-dev rsync util-linux &&
       # Not supported yet python3-pip
       apt autoclean && \
       rm -rf /var/lib/apt/lists/*
-      # Because python3-pip not support, pip3 install youtube-dl can't execute command
 
 # Samba client php extension
 RUN pecl install smbclient
