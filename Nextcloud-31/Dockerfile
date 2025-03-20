@@ -11,13 +11,31 @@ RUN apk update && \
       nano \
       curl \
       ghostscript \
-      openldap-dev \
       iputils \
       ffmpeg \
       libheif \
       librsvg \
       util-linux \
       rsync \
+      bzip2 \
+      gnupg \
+      supervisor \
+      bash \
+      netcat-openbsd \
+      openssl \
+      git \
+      postgresql-client \
+      tzdata \
+      sudo \
+      grep \
+      nodejs \
+      bind-tools \
+      coreutils \
+      build-base && \
+      rm -rf /var/cache/apk/*
+
+RUN apk add --no-cache --virtual .build-deps \
+      $PHPIZE_DEPS \
       autoconf \
       freetype-dev \
       gmp-dev \
@@ -34,41 +52,44 @@ RUN apk update && \
       libwebp-dev \
       libxml2-dev \
       libzip-dev \
+      openldap-dev \
       pcre-dev \
       postgresql-dev \
-      bzip2 \
-      gnupg \
-      supervisor \
       imap-dev \
       krb5-dev \
       openssl-dev \
       samba-dev \
       bzip2-dev \
-      libpq-dev \
-      bash \
-      netcat-openbsd \
-      openssl \
-      git \
-      postgresql-client \
-      tzdata \
-      sudo \
-      grep \
-      nodejs \
-      libreoffice \
-      bind-tools \
-      coreutils \
-      build-base && \
-      rm -rf /var/cache/apk/*
+      libpq-dev && \
+      rm -rf /var/cache/apk/* \
+    ; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
+    docker-php-ext-configure ftp --with-openssl-dir=/usr; \
+    docker-php-ext-configure ldap; \
+    docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
+    docker-php-ext-install -j "$(nproc)" \
+        bcmath \
+        exif \
+        gd \
+        gmp \
+        intl \
+        ldap \
+        opcache \
+        pcntl \
+        pdo_pgsql \
+        sysvsem \
+        zip \
+        bz2 \
+        imap \
+        pgsql \
+        ftp \
+    ; \
+    pecl install smbclient; \
+    docker-php-ext-enable smbclient; \
+    pecl install inotify; \
+    docker-php-ext-enable inotify
 
-# Samba client php extension
-RUN pecl install smbclient && \
-    docker-php-ext-enable smbclient
-
-# Install php-ldap Extension
-RUN docker-php-ext-install ldap
-
-# inotify extension
-RUN pecl install inotify
+RUN apk del .build-deps
 
 # For LibreSign preview image
 #RUN sed -i'' 's|.*<policy domain="coder".*"PDF".*|<policy domain="coder" rights="read \| write" pattern="PDF" />|g' /etc/ImageMagick-6/policy.xml
