@@ -8,7 +8,7 @@ RUN apt update && \
       curl ghostscript libldap2-dev \
       iputils-ping ffmpeg imagemagick \
       libheif-dev ghostscript librsvg2-bin \
-      libiconv-hook-dev rsync util-linux &&
+      libiconv-hook-dev rsync util-linux && \
       # Not supported yet python3-pip
       apt autoclean && \
       rm -rf /var/lib/apt/lists/*
