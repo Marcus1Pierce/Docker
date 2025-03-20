@@ -7,7 +7,6 @@ RUN apk update && \
       samba-client-libs \
       imagemagick \
       imagemagick-libs \
-      unar \
       p7zip \
       nano \
       curl \
