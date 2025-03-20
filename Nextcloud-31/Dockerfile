@@ -35,7 +35,28 @@ RUN apk update && \
       libxml2-dev \
       libzip-dev \
       pcre-dev \
-      postgresql-dev && \
+      postgresql-dev \
+      bzip2 \
+      gnupg \
+      supervisor \
+      imap-dev \
+      krb5-dev \
+      openssl-dev \
+      samba-dev \
+      bzip2-dev \
+      libpq-dev \
+      bash \
+      netcat-openbsd \
+      openssl \
+      git \
+      postgresql-client \
+      tzdata \
+      sudo \
+      grep \
+      nodejs \
+      libreoffice \
+      bind-tools \
+      coreutils && \
       # Not supported yet python3-pip
       rm -rf /var/cache/apk/*
 
