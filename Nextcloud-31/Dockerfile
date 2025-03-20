@@ -1,17 +1,27 @@
-FROM nextcloud:31.0.2-fpm
+FROM nextcloud:31.0.2-fpm-alpine
 
-RUN apt update && \
-      apt install -y \
-      procps smbclient libsmbclient-dev \
-      libmagickcore-6.q16-6-extra unrar-free p7zip \
-      p7zip-full nano cron \
-      curl ghostscript libldap2-dev \
-      iputils-ping ffmpeg imagemagick \
-      libheif-dev ghostscript librsvg2-bin \
-      libiconv-hook-dev rsync util-linux && \
+RUN apk update && \
+      apk add --no-cache \
+      procps \
+      samba-client \
+      samba-client-libs \
+      imagemagick \
+      imagemagick-libs \
+      unrar \
+      p7zip \
+      p7zip-full \
+      nano \
+      curl \
+      ghostscript \
+      openldap-dev \
+      iputils \
+      ffmpeg \
+      libheif \
+      librsvg \
+      util-linux \
+      rsync && \
       # Not supported yet python3-pip
-      apt autoclean && \
-      rm -rf /var/lib/apt/lists/*
+      rm -rf /var/cache/apk/*
 
 # Samba client php extension
 RUN pecl install smbclient
