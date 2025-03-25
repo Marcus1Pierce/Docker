@@ -30,16 +30,27 @@ RUN apk update && \
         nodejs \
         bind-tools \
         coreutils \
-        libc-client \
-        libc-client-dev && \
+        build-base \
+        krb5-dev \
+        openssl-dev && \
     rm -rf /var/cache/apk/*
+
+# Build and install libc-client
+RUN curl -fsSL https://www.washington.edu/imap/imap-2007f.tar.gz -o imap.tar.gz && \
+    tar -xzf imap.tar.gz && \
+    cd imap-2007f && \
+    make ldb EXTRACFLAGS=-fPIC && \
+    mkdir -p /usr/local/lib && \
+    cp c-client/*.h /usr/local/include && \
+    cp c-client/*.c /usr/local/lib && \
+    cp c-client/c-client.a /usr/local/lib/libc-client.a && \
+    cd .. && \
+    rm -rf imap-2007f imap.tar.gz
 
 # Install PHP extensions
 RUN apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
         imap-dev \
-        krb5-dev \
-        openssl-dev \
         samba-dev \
         bzip2-dev \
         libpq-dev \
@@ -82,10 +93,4 @@ RUN apk add --no-cache --virtual .build-deps \
     ; \
     pecl install smbclient; \
     docker-php-ext-enable smbclient; \
-    apk del .build-deps && \
-    apk add --no-cache libc-client
-
-# Set permissions and ownership
-RUN mkdir -p /var/www/data && \
-    chown -R www-data:root /var/www && \
-    chmod -R g=u /var/www
+    apk del .build-deps
