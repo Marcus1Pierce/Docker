@@ -29,7 +29,9 @@ RUN apk update && \
         grep \
         nodejs \
         bind-tools \
-        coreutils && \
+        coreutils \
+        libc-client \
+        libc-client-dev && \
     rm -rf /var/cache/apk/*
 
 # Install PHP extensions
@@ -80,4 +82,10 @@ RUN apk add --no-cache --virtual .build-deps \
     ; \
     pecl install smbclient; \
     docker-php-ext-enable smbclient; \
-    apk del .build-deps
+    apk del .build-deps && \
+    apk add --no-cache libc-client
+
+# Set permissions and ownership
+RUN mkdir -p /var/www/data && \
+    chown -R www-data:root /var/www && \
+    chmod -R g=u /var/www
