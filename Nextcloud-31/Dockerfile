@@ -32,20 +32,9 @@ RUN apk update && \
         coreutils \
         build-base \
         krb5-dev \
-        openssl-dev && \
+        openssl-dev \
+        libc-client-devel && \
     rm -rf /var/cache/apk/*
-
-# Build and install libc-client
-RUN curl -fsSL https://www.washington.edu/imap/imap-2007f.tar.gz -o imap.tar.gz && \
-    tar -xzf imap.tar.gz && \
-    cd imap-2007f && \
-    make ldb EXTRACFLAGS=-fPIC && \
-    mkdir -p /usr/local/lib && \
-    cp c-client/*.h /usr/local/include && \
-    cp c-client/*.c /usr/local/lib && \
-    cp c-client/c-client.a /usr/local/lib/libc-client.a && \
-    cd .. && \
-    rm -rf imap-2007f imap.tar.gz
 
 # Install PHP extensions
 RUN apk add --no-cache --virtual .build-deps \
