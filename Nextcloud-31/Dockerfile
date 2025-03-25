@@ -33,7 +33,7 @@ RUN apk update && \
         build-base \
         krb5-dev \
         openssl-dev \
-        libc-client-devel && \
+        libc-utils && \
     rm -rf /var/cache/apk/*
 
 # Install PHP extensions
