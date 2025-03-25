@@ -1,8 +1,7 @@
 FROM nextcloud:31.0.2-fpm-alpine
 
 # Update and install additional dependencies
-RUN apk update && \
-    apk add --no-cache \
+RUN apk add --no-cache \
         procps \
         samba-client \
         samba-client-libs \
@@ -15,9 +14,6 @@ RUN apk update && \
         libheif \
         librsvg \
         util-linux \
-        rsync \
-        bzip2 \
-        gnupg \
         supervisor \
         bash \
         netcat-openbsd \
@@ -30,55 +26,24 @@ RUN apk update && \
         nodejs \
         bind-tools \
         coreutils \
-        build-base \
         krb5-dev \
-        openssl-dev \
-        libc-utils && \
-    rm -rf /var/cache/apk/*
+        libc6-compat \
+        imap-dev \
+    && rm -rf /var/cache/apk/*
 
-# Install PHP extensions
+# Install additional PHP extensions
 RUN apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
-        imap-dev \
         samba-dev \
         bzip2-dev \
         libpq-dev \
-        autoconf \
-        freetype-dev \
-        gmp-dev \
-        icu-dev \
-        imagemagick-dev \
-        libevent-dev \
-        libjpeg-turbo-dev \
-        libmcrypt-dev \
-        libmemcached-dev \
-        libpng-dev \
-        libwebp-dev \
-        libxml2-dev \
-        libzip-dev \
-        openldap-dev \
-        pcre-dev \
-        postgresql-dev \
+        imap-dev \
     ; \
     docker-php-ext-configure imap --with-kerberos --with-imap-ssl; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
-    docker-php-ext-configure ldap; \
     docker-php-ext-install \
         bz2 \
         imap \
         pgsql \
-        ftp \
-        bcmath \
-        exif \
-        gd \
-        gmp \
-        intl \
-        ldap \
-        opcache \
-        pcntl \
-        pdo_pgsql \
-        sysvsem \
-        zip \
     ; \
     pecl install smbclient; \
     docker-php-ext-enable smbclient; \
