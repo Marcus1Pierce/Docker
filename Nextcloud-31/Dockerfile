@@ -1,4 +1,4 @@
-FROM nextcloud:31.0.3-fpm-alpine
+FROM nextcloud:31.0.2-fpm-alpine
 
 # Update and install additional dependencies
 RUN apk add --no-cache \
