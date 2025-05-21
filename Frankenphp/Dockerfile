@@ -23,5 +23,43 @@ RUN CGO_ENABLED=1 \
 
 FROM dunglas/frankenphp:1.6.0-alpine AS runner
 
+# add additional extensions here:
+RUN install-php-extensions \
+    ctype \
+    curl \
+    dom \
+    fileinfo \
+    filter \
+    gd \
+    hash \
+    json \
+    libxml \
+    mbstring \
+    openssl \
+    posix \
+    session \
+    simplexml \
+    xmlreader \
+    xmlwriter \
+    zip \
+    zlib \
+    pdo_sqlite \
+    pdo_mysql \
+    pdo_pgsql \
+    intl \
+    sodium \
+    ldap \
+    smbclient \
+    ftp \
+    imap \
+    gmp \
+    exif \
+    apcu \
+    memcached \
+    redis \
+    imagick \
+    pcntl \
+    phar
+
 # Replace the official binary by the one containing your custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
