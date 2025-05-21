@@ -9,6 +9,7 @@ on:
       - 'Nextcloud-31/**'
       - 'Caddy/**'
       - 'Watchtower/**'
+      - 'Frankenphp/**'
 
 jobs:
   check-changes:
@@ -19,6 +20,7 @@ jobs:
       nextcloud31: ${{ steps.filter.outputs.nextcloud31 }}
       caddy: ${{ steps.filter.outputs.caddy }}
       watchtower: ${{ steps.filter.outputs.watchtower }}
+      frankenphp: ${{ steps.filter.outputs.frankenphp }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -38,6 +40,8 @@ jobs:
               - 'Caddy/**'
             watchtower:
               - 'Watchtower/**'
+            frankenphp:
+              - 'Frankenphp/**'
 
   build-nextcloud:
     needs: check-changes
@@ -263,3 +267,48 @@ jobs:
             marcus1pierce/watchtower:amd64 \
             marcus1pierce/watchtower:arm64
           docker manifest push marcus1pierce/watchtower:latest
+
+  build-frankenphp:
+    needs: check-changes
+    if: needs.check-changes.outputs.frankenphp == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [amd64, arm64]
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Build and push FrankenPHP Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Frankenphp
+          push: true
+          tags: marcus1pierce/frankenphp:${{ matrix.architecture }}
+          platforms: linux/${{ matrix.architecture }}
+
+  create-manifest-frankenphp:
+    needs: build-frankenphp
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to dockerhub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push FrankenPHP multi-arch manifest
+        run: |
+          docker manifest create marcus1pierce/frankenphp:latest \
+            marcus1pierce/frankenphp:amd64 \
+            marcus1pierce/frankenphp:arm64
+          docker manifest push marcus1pierce/frankenphp:latest
