@@ -1,4 +1,4 @@
-FROM nextcloud:29.0.14-fpm
+FROM nextcloud:29.0.16-fpm
 
 RUN apt update && \
       apt install -y \
