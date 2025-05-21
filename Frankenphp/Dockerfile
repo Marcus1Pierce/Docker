@@ -1,8 +1,5 @@
 FROM dunglas/frankenphp:1.6.0-builder-alpine AS builder
 
-# Install PHP development tools for `php-config`
-RUN apk add --no-cache php-dev php-config build-base
-
 # Copy xcaddy in the builder image
 COPY --from=caddy:builder /usr/bin/xcaddy /usr/bin/xcaddy
 
@@ -12,10 +9,15 @@ RUN CGO_ENABLED=1 \
     XCADDY_GO_BUILD_FLAGS="-ldflags='-w -s' -tags=nobadger,nomysql,nopgx" \
     CGO_CFLAGS=$(php-config --includes) \
     CGO_LDFLAGS="$(php-config --ldflags) $(php-config --libs)" \
-    echo "CGO_CFLAGS: $CGO_CFLAGS" && \
-    echo "CGO_LDFLAGS: $CGO_LDFLAGS" && \
     xcaddy build \
         --output /usr/local/bin/frankenphp \
+        --with github.com/dunglas/frankenphp=./ \
+        --with github.com/dunglas/frankenphp/caddy=./caddy/ \
+        --with github.com/dunglas/caddy-cbrotli \
+        # Mercure and Vulcain are included in the official build, but feel free to remove them
+        --with github.com/dunglas/mercure/caddy \
+        --with github.com/dunglas/vulcain/caddy \
+        # Add extra Caddy modules here
         --with github.com/caddyserver/nginx-adapter \
         --with github.com/caddy-dns/cloudflare
 
