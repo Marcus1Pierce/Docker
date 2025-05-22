@@ -59,7 +59,8 @@ RUN install-php-extensions \
     redis \
     imagick \
     pcntl \
-    phar
+    phar \
+    sysvsem
 
 # Replace the official binary by the one containing your custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
