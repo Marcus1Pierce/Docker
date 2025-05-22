@@ -62,5 +62,8 @@ RUN install-php-extensions \
     phar \
     sysvsem
 
+# Production:
+RUN cp $PHP_INI_DIR/php.ini-production $PHP_INI_DIR/php.ini
+
 # Replace the official binary by the one containing your custom modules
 COPY --from=builder /usr/local/bin/frankenphp /usr/local/bin/frankenphp
